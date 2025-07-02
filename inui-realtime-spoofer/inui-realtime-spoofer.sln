@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36203.30
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "inui-realtime-spoofer", "inui-realtime-spoofer.vcxproj", "{E9558D5D-9887-47E0-A5A3-017340077E50}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spoofer-launcher", "spoofer-launcher\spoofer-launcher.vcxproj", "{27523A42-E3C9-4D21-996D-4F6ADF485586}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E9558D5D-9887-47E0-A5A3-017340077E50}.Debug|x64.ActiveCfg = Debug|x64
+		{E9558D5D-9887-47E0-A5A3-017340077E50}.Debug|x64.Build.0 = Debug|x64
+		{E9558D5D-9887-47E0-A5A3-017340077E50}.Release|x64.ActiveCfg = Release|x64
+		{E9558D5D-9887-47E0-A5A3-017340077E50}.Release|x64.Build.0 = Release|x64
+		{27523A42-E3C9-4D21-996D-4F6ADF485586}.Debug|x64.ActiveCfg = Debug|x64
+		{27523A42-E3C9-4D21-996D-4F6ADF485586}.Debug|x64.Build.0 = Debug|x64
+		{27523A42-E3C9-4D21-996D-4F6ADF485586}.Release|x64.ActiveCfg = Release|x64
+		{27523A42-E3C9-4D21-996D-4F6ADF485586}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {337D960E-D072-4C6C-9405-683D66037E7E}
+	EndGlobalSection
+EndGlobal
