@@ -66,7 +66,7 @@ int main() {
 
     // Get function address
     auto takeScreenshot = reinterpret_cast<TakeScreenshotFunc>(
-        GetProcAddress(hDll, "take_screenshot")
+        GetProcAddress(hDll, "collect_wh_data")
     );
     
     if (!takeScreenshot) {

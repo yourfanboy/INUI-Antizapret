@@ -1,21 +1,18 @@
-// spoofer-launcher.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <Windows.h>
 #include <iostream>
 #include <string>
 #include <filesystem>
 #include <TlHelp32.h>
 
-// Получение полного пути к нашей DLL
-std::wstring GetDllPath() {
+// Получение полного пути к DLL
+std::wstring GetDllPath(const std::wstring& dllName) {
     wchar_t buffer[MAX_PATH];
     GetModuleFileNameW(NULL, buffer, MAX_PATH);
     std::filesystem::path exePath(buffer);
-    return exePath.parent_path() / L"inui-realtime-spoofer.dll";
+    return exePath.parent_path() / dllName;
 }
 
-// Функция для выбора исполняемого файла через диалог
+// Функция для выбора исполняемого файла
 std::wstring SelectExecutable() {
     wchar_t filename[MAX_PATH];
     filename[0] = '\0';
@@ -37,112 +34,126 @@ std::wstring SelectExecutable() {
     return filename;
 }
 
-// Инжект DLL в процесс
-bool InjectDll(HANDLE hProcess, const std::wstring& dllPath) {
-    // Выделяем память в целевом процессе для пути к DLL
-    SIZE_T pathSize = (dllPath.length() + 1) * sizeof(wchar_t);
-    LPVOID pDllPath = VirtualAllocEx(hProcess, NULL, pathSize,
-        MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-    
-    if (!pDllPath) {
-        std::wcout << L"Failed to allocate memory in target process\n";
+// Функция для инжекта DLL
+bool InjectDll(DWORD processId, const std::wstring& dllPath) {
+    HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, processId);
+    if (!hProcess) {
+        std::wcout << L"Failed to open target process. Error: " << GetLastError() << std::endl;
         return false;
     }
 
-    // Записываем путь к DLL в память процесса
-    if (!WriteProcessMemory(hProcess, pDllPath, dllPath.c_str(), 
-        pathSize, NULL)) {
-        std::wcout << L"Failed to write to process memory\n";
+    // Выделяем память в процессе
+    SIZE_T pathSize = (dllPath.length() + 1) * sizeof(wchar_t);
+    LPVOID pDllPath = VirtualAllocEx(hProcess, NULL, pathSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+
+    if (!pDllPath) {
+        std::wcout << L"Failed to allocate memory in target process. Error: " << GetLastError() << std::endl;
+        CloseHandle(hProcess);
+        return false;
+    }
+
+    // Записываем путь к DLL
+    if (!WriteProcessMemory(hProcess, pDllPath, dllPath.c_str(), pathSize, NULL)) {
+        std::wcout << L"Failed to write to process memory. Error: " << GetLastError() << std::endl;
         VirtualFreeEx(hProcess, pDllPath, 0, MEM_RELEASE);
+        CloseHandle(hProcess);
         return false;
     }
 
     // Получаем адрес LoadLibraryW
-    HMODULE hKernel32 = GetModuleHandleW(L"kernel32.dll");
-    if (!hKernel32) {
-        std::wcout << L"Failed to get kernel32.dll handle\n";
-        VirtualFreeEx(hProcess, pDllPath, 0, MEM_RELEASE);
-        return false;
-    }
-
-    LPTHREAD_START_ROUTINE pLoadLibrary = 
-        (LPTHREAD_START_ROUTINE)GetProcAddress(hKernel32, "LoadLibraryW");
-    
+    LPTHREAD_START_ROUTINE pLoadLibrary = (LPTHREAD_START_ROUTINE)GetProcAddress(GetModuleHandleW(L"kernel32.dll"), "LoadLibraryW");
     if (!pLoadLibrary) {
-        std::wcout << L"Failed to get LoadLibraryW address\n";
+        std::wcout << L"Failed to get LoadLibraryW address. Error: " << GetLastError() << std::endl;
         VirtualFreeEx(hProcess, pDllPath, 0, MEM_RELEASE);
+        CloseHandle(hProcess);
         return false;
     }
 
-    // Создаем удаленный поток для загрузки DLL
-    HANDLE hThread = CreateRemoteThread(hProcess, NULL, 0,
-        pLoadLibrary, pDllPath, 0, NULL);
-    
+    // Создаем удаленный поток
+    HANDLE hThread = CreateRemoteThread(hProcess, NULL, 0, pLoadLibrary, pDllPath, 0, NULL);
     if (!hThread) {
-        std::wcout << L"Failed to create remote thread\n";
+        std::wcout << L"Failed to create remote thread. Error: " << GetLastError() << std::endl;
         VirtualFreeEx(hProcess, pDllPath, 0, MEM_RELEASE);
+        CloseHandle(hProcess);
         return false;
     }
 
-    // Ждем завершения загрузки
+    // Ждем завершения
     WaitForSingleObject(hThread, INFINITE);
+
+    // Проверяем результат
+    DWORD exitCode;
+    GetExitCodeThread(hThread, &exitCode);
+    if (exitCode == 0) {
+        std::wcout << L"Failed to load DLL (thread exit code 0)" << std::endl;
+    }
 
     // Очищаем
     CloseHandle(hThread);
     VirtualFreeEx(hProcess, pDllPath, 0, MEM_RELEASE);
+    CloseHandle(hProcess);
 
-    return true;
+    return exitCode != 0;
+}
+
+// Ждем пока процесс проинициализируется
+void WaitForProcessInitialization(DWORD processId) {
+    std::wcout << L"Waiting for process initialization..." << std::endl;
+    Sleep(3000); // Ждем 3 секунды (можно настроить по необходимости)
 }
 
 int main() {
-    // Получаем путь к DLL
-    std::wstring dllPath = GetDllPath();
-    if (!std::filesystem::exists(dllPath)) {
-        std::wcout << L"Error: DLL not found at: " << dllPath << std::endl;
+    // Получаем пути к DLL
+    std::wstring spooferDllPath = GetDllPath(L"inui-realtime-spoofer.dll");
+    std::wstring additionalDllPath = GetDllPath(L"abcdefg.dll");
+
+    // Проверяем основную DLL
+    if (!std::filesystem::exists(spooferDllPath)) {
+        std::wcout << L"Error: Spoofer DLL not found at: " << spooferDllPath << std::endl;
         system("pause");
         return 1;
     }
 
-    // Выбираем исполняемый файл
+    // Выбираем EXE
     std::wstring exePath = SelectExecutable();
     if (exePath.empty()) {
-        std::wcout << L"No file selected.\n";
+        std::wcout << L"No file selected." << std::endl;
         system("pause");
         return 1;
     }
 
-    // Создаем процесс в приостановленном состоянии
+    // Создаем процесс
     STARTUPINFOW si;
     PROCESS_INFORMATION pi;
     ZeroMemory(&si, sizeof(si));
     ZeroMemory(&pi, sizeof(pi));
     si.cb = sizeof(si);
 
-    std::wstring cmdLine = exePath;
+    // Добавляем параметр -no-sandbox к командной строке
+    std::wstring cmdLine = L"\"" + exePath + L"\" -no-sandbox";
     std::vector<wchar_t> cmdLineBuffer(cmdLine.begin(), cmdLine.end());
-    cmdLineBuffer.push_back(0); // Null terminator
+    cmdLineBuffer.push_back(0);
 
     if (!CreateProcessW(
-        NULL,                   // No module name (use command line)
-        cmdLineBuffer.data(),   // Command line
-        NULL,                   // Process handle not inheritable
-        NULL,                   // Thread handle not inheritable
-        FALSE,                  // Set handle inheritance to FALSE
-        CREATE_SUSPENDED,       // Create suspended
-        NULL,                   // Use parent's environment block
-        NULL,                   // Use parent's starting directory 
-        &si,                    // Pointer to STARTUPINFO structure
-        &pi                     // Pointer to PROCESS_INFORMATION structure
+        NULL,
+        cmdLineBuffer.data(),
+        NULL,
+        NULL,
+        FALSE,
+        CREATE_SUSPENDED,
+        NULL,
+        NULL,
+        &si,
+        &pi
     )) {
         std::wcout << L"Failed to create process. Error: " << GetLastError() << std::endl;
         system("pause");
         return 1;
     }
 
-    // Инжектим DLL
-    std::wcout << L"Injecting DLL...\n";
-    if (!InjectDll(pi.hProcess, dllPath)) {
-        std::wcout << L"Failed to inject DLL\n";
+    // Инжектим первую DLL в приостановленный процесс
+    std::wcout << L"Injecting Spoofer DLL..." << std::endl;
+    if (!InjectDll(pi.dwProcessId, spooferDllPath)) {
         TerminateProcess(pi.hProcess, 1);
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
@@ -150,26 +161,32 @@ int main() {
         return 1;
     }
 
-    // Возобновляем процесс
+    // Запускаем процесс
     ResumeThread(pi.hThread);
+    std::wcout << L"Process started. PID: " << pi.dwProcessId << std::endl;
 
-    std::wcout << L"Process started and DLL injected successfully!\n";
+    // Ждем инициализации
+    WaitForProcessInitialization(pi.dwProcessId);
+
+    // Пробуем инжектить вторую DLL
+    if (std::filesystem::exists(additionalDllPath)) {
+        std::wcout << L"Attempting to inject Additional DLL..." << std::endl;
+        if (!InjectDll(pi.dwProcessId, additionalDllPath)) {
+            std::wcout << L"Warning: Failed to inject Additional DLL" << std::endl;
+        }
+        else {
+            std::wcout << L"Additional DLL injected successfully!" << std::endl;
+        }
+    }
+    else {
+        std::wcout << L"Additional DLL not found, skipping: " << additionalDllPath << std::endl;
+    }
 
     // Закрываем хендлы
     CloseHandle(pi.hProcess);
     CloseHandle(pi.hThread);
 
+    std::wcout << L"Done!" << std::endl;
     system("pause");
     return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

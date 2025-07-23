@@ -46,7 +46,7 @@ using TakeScreenshotFunc = int(*)(const wchar_t*, unsigned char*, int, int);
     constexpr int32_t WIDTH = 1280;
     constexpr int32_t HEIGHT = 720;
     constexpr size_t BUFFER_SIZE = static_cast<size_t>(WIDTH) * HEIGHT * 4;
-    
+
     std::vector<uint8_t> imageBuffer(BUFFER_SIZE);
 ```
 
