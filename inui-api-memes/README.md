@@ -1,4 +1,4 @@
-# INUI Api memes :: t.me/inuicheat
+# INUI Api memes :: t.me/inuistaff
 
 ---
 
@@ -95,4 +95,4 @@ inui-api-memes/
 
 ---
 
-Телеграм со всякими приколами: https://t.me/inuicheat
+Телеграм со всякими приколами: https://t.me/inuistaff

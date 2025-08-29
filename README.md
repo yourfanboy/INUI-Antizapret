@@ -1,4 +1,4 @@
-# INUI-Antizapret :: t.me/inuicheat
+# INUI-Antizapret :: t.me/inuistaff
 
 ---
 
@@ -19,6 +19,7 @@
 | inui-imitat0r         | [cюда ткнуть можно](https://github.com/yourfanboy/INUI-Antizapret/tree/main/inui-imitat0r)         | Подгрузка их модуля античита в память для дальнейшего анализа/тестов поведения при том или ином взаимодействии с ним.      |
 | inui-realtime-spoofer | [cюда ткнуть можно](https://github.com/yourfanboy/INUI-Antizapret/tree/main/inui-realtime-spoofer) | Спуфер HWID в "реальном времени". Работает по принципу перехвата вызова REG.EXE и прочих вызовов из модуля node-machine-id |
 | inui-tools            | [cюда ткнуть можно](https://github.com/yourfanboy/INUI-Antizapret/tree/main/inui-tools)            | Набор инструментов, которые я юзал по ходу дела для тестов и прочего.                                                      |
+| inui-radar            | [cюда ткнуть можно](https://github.com/yourfanboy/INUI-Antizapret/tree/main/inui-radar)            | Возрожденная луашка со скита на клауд радар                                                                                |
 | inui-screenshot       | [cюда ткнуть нельзя]()                                                                             | Ещё один метод обхода скринов. Залью как-нибудь потом.                                                                     |
 
 ### Актуальность репозиториев:
@@ -32,8 +33,9 @@
 | inui-imitat0r         | **Актуален**. Обновлена функция получения скрина.                   |
 | inui-realtime-spoofer | **Актуален**. Сам гоняю с ним.                                      |
 | inui-tools            | **Актуален**.                                                       |
+| inui-tools            | **Актуален**. Ну, сервачок был оплачен на пару деньков, так что сами хостите, если так хочется.|
 | inui-screenshot       | **Актуален** на момент 23/07/2025.                                  |
 
 --- 
 
-Телега со всякими приколами: [nokta :: serverside?](https://t.me/inuicheat)
+Телега со всякими приколами: [nokta :: serverside?](https://t.me/inuistaff)

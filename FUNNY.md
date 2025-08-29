@@ -1,4 +1,4 @@
-# INUI-Antizapret :: t.me/inuicheat
+# INUI-Antizapret :: t.me/inuistaff
 
 ---
 

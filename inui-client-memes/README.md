@@ -1,4 +1,4 @@
-# INUI screenshot bypass :: t.me/inuicheat
+# INUI screenshot bypass :: t.me/inuistaff
 
 ---
 
@@ -108,4 +108,4 @@ https://api.inuisoftware.con/api/v1/anticheat/screenshot-wallhack
 
 ---
 
-Телеграм со всякими приколами: https://t.me/inuicheat
+Телеграм со всякими приколами: https://t.me/inuistaff

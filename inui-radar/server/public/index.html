@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nokta :: Radar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="main-container">
+        <!-- Боковая панель -->
+        <div class="sidebar">
+            <div class="header">
+                <div class="title">Nokta</div>
+                <div class="connection-status">
+                    <div class="status-dot" id="statusDot"></div>
+                    <div class="status-text" id="statusText">Подключение</div>
+                </div>
+            </div>
+
+            <!-- Навигационные вкладки -->
+            <div class="nav-tabs">
+                <div class="nav-tab" data-tab="radar">
+                    <svg class="nav-tab-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/></svg>
+                </div>
+                <div class="nav-tab" data-tab="display">
+                    <svg class="nav-tab-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                <div class="nav-tab" data-tab="colors">
+                    <svg class="nav-tab-icon" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+                </div>
+                <div class="nav-tab" data-tab="misc">
+                    <svg class="nav-tab-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="12" r="2"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Основная область -->
+        <div class="main-area">
+            <div class="main-header">
+                <div class="main-title">NoktaRadar</div>
+            </div>
+            <div class="main-content">
+                <!-- Настройки -->
+                <div class="settings-area hidden">
+                    <div class="settings-wrapper">
+                        <div class="settings-content">
+                            <!-- Вкладка Радар -->
+                            <div class="tab-content" id="radarContent">
+                                <div class="setting-group">
+                                    <div class="setting-group-title">Масштабирование</div>
+                                    <div class="setting-item"><span class="setting-label">Автомасштаб</span><label class="switch"><input type="checkbox" id="adaptiveScale" checked><span class="slider"></span></label></div>
+                                </div>
+                                <div class="setting-group">
+                                    <div class="setting-group-title">Управление</div>
+                                    <div class="setting-item"><span class="setting-label">Масштабирование колесиком</span><label class="switch"><input type="checkbox" id="mouseWheelZoom" checked><span class="slider"></span></label></div>
+                                    <div class="setting-item"><span class="setting-label">Перемещение средней кнопкой</span><label class="switch"><input type="checkbox" id="mousePan" checked><span class="slider"></span></label></div>
+                                    <div class="setting-item"><span class="setting-label">Плавное движение</span><label class="switch"><input type="checkbox" id="smoothMovement" checked><span class="slider"></span></label></div>
+                                </div>
+                            </div>
+                            <!-- Вкладка Отображение -->
+                            <div class="tab-content" id="displayContent">
+                                <div class="setting-group">
+                                    <div class="setting-group-title">Игроки</div>
+                                    <div class="setting-item"><span class="setting-label">Показывать имена</span><label class="switch"><input type="checkbox" id="toggleNames" checked><span class="slider"></span></label></div>
+                                    <div class="setting-item"><span class="setting-label">Показывать здоровье</span><label class="switch"><input type="checkbox" id="toggleHealth" checked><span class="slider"></span></label></div>
+                                    <div class="setting-item"><span class="setting-label">Размер Имени/ХП</span><input type="range" id="textSize" class="styled-range" min="8" max="16" value="10"></div>
+                                </div>
+                                <div class="setting-group">
+                                    <div class="setting-group-title">Взгляд</div>
+                                    <div class="setting-item"><span class="setting-label">Стиль взгляда</span><select id="viewStyle" class="styled-select"><option value="off">Выключен</option><option value="line">Линия</option><option value="fov">Конус</option></select></div>
+                                    <div class="setting-item" id="lineSettings" style="display: none;"><span class="setting-label">Длина линии</span><input type="range" id="lineLength" class="styled-range" min="10" max="100" value="50"></div>
+                                    <div class="setting-item" id="fovSettings" style="display: none;"><span class="setting-label">Угол обзора</span><input type="range" id="fovAngle" class="styled-range" min="10" max="180" value="90"></div>
+                                </div>
+                            </div>
+                            <!-- Вкладка Цвета -->
+                            <div class="tab-content" id="colorsContent">
+                                <div class="setting-group">
+                                    <div class="setting-group-title">Игроки</div>
+                                    <div class="setting-item"><span class="setting-label">Террорист</span><input type="color" id="terroristNormalColor" class="color-picker" value="#ff6b35"></div>
+                                    <div class="setting-item"><span class="setting-label">Террорист с бомбой</span><input type="color" id="terroristWithBombColor" class="color-picker" value="#ff0000"></div>
+                                    <div class="setting-item"><span class="setting-label">Спецназ</span><input type="color" id="counterTerroristColor" class="color-picker" value="#4169e1"></div>
+                                </div>
+                                <div class="setting-group">
+                                    <div class="setting-group-title">Иконки</div>
+                                    <div class="setting-item"><span class="setting-label">Цвет бомбы</span><input type="color" id="bombColor" class="color-picker" value="#ff4444"></div>
+                                    <div class="setting-item"><span class="setting-label">Цвет дефузера</span><input type="color" id="defuserColor" class="color-picker" value="#44ff44"></div>
+                                </div>
+                                <div class="setting-group">
+                                    <div class="setting-group-title">Взгляд</div>
+                                    <div class="setting-item"><span class="setting-label">Цвет линии</span><input type="color" id="lineColor" class="color-picker" value="#ff00ff"></div>
+                                    <div class="setting-item"><span class="setting-label">Цвет конуса</span><input type="color" id="fovColor" class="color-picker" value="#ff00ff"></div>
+                                </div>
+                            </div>
+                            <!-- Вкладка Разное -->
+                            <div class="tab-content" id="miscContent">
+                                <div class="setting-group">
+                                    <div class="setting-group-title">Информация</div>
+                                    <div class="setting-item"><span class="setting-label">Version</span><span class="setting-label">1.0 beta</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Контейнер радара -->
+                <div class="radar-container" id="radarContainer">
+                    <div class="debug-logs" id="debugLogs" style="display: none;"></div>
+                    <div class="radar-map" id="radarMap"></div>
+                    <div class="info-panel">
+                        <div class="map-name" id="mapName">Загрузка...</div>
+                        <div class="info-item"><span class="info-label">Игроков:</span><span class="info-value" id="playerCount">0</span></div>
+                        <div class="info-item"><span class="info-label">Последнее обновление:</span><span class="info-value" id="lastUpdate">никогда</span></div>
+                        <div class="player-list" id="playerList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

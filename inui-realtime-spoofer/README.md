@@ -1,4 +1,4 @@
-# INUI-Realtime-Spoofer :: t.me/inuicheat
+# INUI-Realtime-Spoofer :: t.me/inuistaff
 
 ---
 
@@ -24,4 +24,4 @@
 
 ---
 
-Телега со всякими приколами: https://t.me/inuicheat
+Телега со всякими приколами: https://t.me/inuistaff

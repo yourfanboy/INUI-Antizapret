@@ -1,4 +1,4 @@
-# INUI Imitat0r :: t.me/inuicheat
+# INUI Imitat0r :: t.me/inuistaff
 
 ---
 
@@ -89,4 +89,4 @@ switch (result) {
 
 ---
 
-Телеграм со всякими приколами: https://t.me/inuicheat
+Телеграм со всякими приколами: https://t.me/inuistaff
